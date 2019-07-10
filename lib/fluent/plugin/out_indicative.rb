@@ -1,3 +1,4 @@
+require 'date'
 require 'net/http'
 require 'net/https'
 require 'uri'
@@ -44,7 +45,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
       eventName: data[@event_name_key],
       eventUniqueId: unique_id_key && data[unique_id_key],
       properties: flatten_hash(data),
-      eventTime: data[@event_time_key]
+      eventTime: Date.parse(data[@event_time_key]).rfc3339
     }
 
     http = Net::HTTP.new(uri.host, uri.port)
@@ -52,5 +53,9 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
     request = Net::HTTP::Post.new(uri.request_uri, headers)
     request.body = payload.to_json
     response = http.request(request)
+
+    if response.code != 200
+        log.warn("Indicative responded with error: #{response.body} for #{payload.to_json}")
+    end
   end
 end

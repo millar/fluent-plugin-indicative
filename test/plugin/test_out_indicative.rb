@@ -48,7 +48,7 @@ class IndicativeOutputTest < Test::Unit::TestCase
           'user_id' => nil,
           'screen.id' => 'index'
         },
-        'eventTime' => '2015-01-01T00:00:00.000Z'
+        'eventTime' => '2015-01-01T00:00:00+00:00'
       }.to_json, times: 1
   end
 end
