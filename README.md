@@ -1,6 +1,8 @@
 # fluent-plugin-indicative
 
-## Usage
+Fluentd output plugin to send events to [Indicative](https://www.indicative.com/)
+
+## Configuration
 
 ```
 <match tag>
