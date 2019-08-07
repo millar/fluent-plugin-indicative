@@ -11,7 +11,7 @@ def flatten_hash(hash)
       flatten_hash(v).map do |h_k, h_v|
         h["#{k}.#{h_k}"] = h_v
       end
-    else 
+    elsif !v.is_a? Array
       h[k] = v
     end
    end
@@ -54,8 +54,8 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
     request.body = payload.to_json
     response = http.request(request)
 
-    if response.code != 200
-        log.warn("Indicative responded with error: #{response.body} for #{payload.to_json}")
+    if response.code != "200"
+        log.warn("Indicative responded with error (code: #{response.code}): #{payload.to_json} -> #{response.body}")
     end
   end
 end
