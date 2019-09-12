@@ -45,7 +45,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
       eventName: data[@event_name_key],
       eventUniqueId: unique_id_key && data[unique_id_key],
       properties: flatten_hash(data),
-      eventTime: Date.parse(data[@event_time_key]).rfc3339
+      eventTime: DateTime.parse(data[@event_time_key]).rfc3339
     }
 
     http = Net::HTTP.new(uri.host, uri.port)
