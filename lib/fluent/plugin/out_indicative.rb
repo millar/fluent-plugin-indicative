@@ -5,6 +5,7 @@ require 'uri'
 
 require 'fluent/plugin/output'
 
+
 def flatten_hash(hash)
   hash.each_with_object({}) do |(k, v), h|
     if v.is_a? Hash
@@ -29,6 +30,16 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
 
   def process(tag, es)
     es.each_slice(100) do |events|
+      send_events(events.map {|time, record| record})
+    end
+  end
+
+  def write(chunk)
+    records = []
+    chunk.each do |time, record|
+      records << record
+    end
+    records.each_slice(100) do |events|
       send_events(events)
     end
   end
@@ -40,7 +51,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
 
     payload = {
       apiKey: @api_key,
-      events: events.map do |time, data|
+      events: events.map do |data|
         unique_id_key = @event_unique_id_keys.find {|k| data[k]}
         {
           eventName: data[@event_name_key],
