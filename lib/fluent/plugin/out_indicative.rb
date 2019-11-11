@@ -5,6 +5,8 @@ require 'uri'
 
 require 'fluent/plugin/output'
 
+BATCH_SIZE = 100
+
 
 def flatten_hash(hash)
   hash.each_with_object({}) do |(k, v), h|
@@ -29,7 +31,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
   config_param :event_unique_id_keys, :array, value_type: :string
 
   def process(tag, es)
-    es.each_slice(100) do |events|
+    es.each_slice(BATCH_SIZE) do |events|
       send_events(events.map {|time, record| record})
     end
   end
@@ -39,7 +41,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
     chunk.each do |time, record|
       records << record
     end
-    records.each_slice(100) do |events|
+    records.each_slice(BATCH_SIZE) do |events|
       send_events(events)
     end
   end
