@@ -28,24 +28,27 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
   config_param :event_unique_id_keys, :array, value_type: :string
 
   def process(tag, es)
-    es.each do |time, record|
-      send_event(record)
+    es.each_slice(100) do |events|
+      send_events(events)
     end
   end
 
-  def send_event(data)
+  def send_events(events)
     uri = URI.parse(@api_url)
 
     headers = {'Content-Type' => 'application/json'}
 
-    unique_id_key = @event_unique_id_keys.find {|k| data[k]}
-
     payload = {
       apiKey: @api_key,
-      eventName: data[@event_name_key],
-      eventUniqueId: unique_id_key && data[unique_id_key],
-      properties: flatten_hash(data),
-      eventTime: DateTime.parse(data[@event_time_key]).rfc3339
+      events: events.map do |time, data|
+        unique_id_key = @event_unique_id_keys.find {|k| data[k]}
+        {
+          eventName: data[@event_name_key],
+          eventUniqueId: unique_id_key && data[unique_id_key],
+          properties: flatten_hash(data),
+          eventTime: DateTime.parse(data[@event_time_key]).rfc3339
+        }
+      end
     }
 
     http = Net::HTTP.new(uri.host, uri.port)

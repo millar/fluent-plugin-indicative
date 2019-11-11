@@ -39,16 +39,18 @@ class IndicativeOutputTest < Test::Unit::TestCase
     assert_requested :post, d.instance.api_url,
       headers: {'Content-Type' => 'application/json'}, body: {
         'apiKey' => 'INDICATIVE_API_KEY',
-        'eventName' => 'screen_view',
-        'eventUniqueId' => 'a3bd2',
-        'properties' => {
-          'event_name' => 'screen_view',
-          'created_at' => '2015-01-01T10:00:00.000Z',
-          'session_id' => 'a3bd2',
-          'user_id' => nil,
-          'screen.id' => 'index'
-        },
-        'eventTime' => '2015-01-01T10:00:00+00:00'
+        'events' => [{
+          'eventName' => 'screen_view',
+          'eventUniqueId' => 'a3bd2',
+          'properties' => {
+            'event_name' => 'screen_view',
+            'created_at' => '2015-01-01T10:00:00.000Z',
+            'session_id' => 'a3bd2',
+            'user_id' => nil,
+            'screen.id' => 'index'
+          },
+          'eventTime' => '2015-01-01T10:00:00+00:00'
+        }]
       }.to_json, times: 1
   end
 end
