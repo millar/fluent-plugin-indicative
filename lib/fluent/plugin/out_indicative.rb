@@ -5,7 +5,7 @@ require 'uri'
 
 require 'fluent/plugin/output'
 
-BATCH_SIZE = 100
+BATCH_SIZE = 15
 
 
 def flatten_hash(hash)

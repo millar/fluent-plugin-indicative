@@ -69,7 +69,7 @@ class IndicativeOutputTest < Test::Unit::TestCase
     d = create_driver(BUFFER_CONFIG)
     stub_request(:any, d.instance.api_url)
     d.run(default_tag: 'test') do
-      20.times do
+      5.times do
         d.feed({'event_name' => 'screen_view', 'created_at' => '2015-01-01T10:00:00.000Z', 'session_id' => 'a3bd2', 'user_id' => nil, 'screen' => {'id' => 'index'}})
       end
     end
