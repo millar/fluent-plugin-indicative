@@ -25,7 +25,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
   Fluent::Plugin.register_output('indicative', self)
 
   config_param :api_key, :string, secret: true
-  config_param :api_url, :string, default: 'https://api.indicative.com/service/event'
+  config_param :api_url, :string, default: 'https://api.indicative.com/service/event/batch'
   config_param :event_name_key, :string
   config_param :event_time_key, :string
   config_param :event_unique_id_keys, :array, value_type: :string

@@ -21,10 +21,6 @@ class IndicativeOutputTest < Test::Unit::TestCase
     <buffer>
       chunk_limit_records 50
     </buffer>
-
-    <format>
-      @type json
-    </format>
   ]
 
   def create_driver(conf=STREAM_CONFIG)
