@@ -5,6 +5,9 @@ require 'uri'
 
 require 'fluent/plugin/output'
 
+BATCH_SIZE = 100
+
+
 def flatten_hash(hash)
   hash.each_with_object({}) do |(k, v), h|
     if v.is_a? Hash
@@ -28,24 +31,37 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
   config_param :event_unique_id_keys, :array, value_type: :string
 
   def process(tag, es)
-    es.each do |time, record|
-      send_event(record)
+    es.each_slice(BATCH_SIZE) do |events|
+      send_events(events.map {|time, record| record})
     end
   end
 
-  def send_event(data)
+  def write(chunk)
+    records = []
+    chunk.each do |time, record|
+      records << record
+    end
+    records.each_slice(BATCH_SIZE) do |events|
+      send_events(events)
+    end
+  end
+
+  def send_events(events)
     uri = URI.parse(@api_url)
 
     headers = {'Content-Type' => 'application/json'}
 
-    unique_id_key = @event_unique_id_keys.find {|k| data[k]}
-
     payload = {
       apiKey: @api_key,
-      eventName: data[@event_name_key],
-      eventUniqueId: unique_id_key && data[unique_id_key],
-      properties: flatten_hash(data),
-      eventTime: DateTime.parse(data[@event_time_key]).rfc3339
+      events: events.map do |data|
+        unique_id_key = @event_unique_id_keys.find {|k| data[k]}
+        {
+          eventName: data[@event_name_key],
+          eventUniqueId: unique_id_key && data[unique_id_key],
+          properties: flatten_hash(data),
+          eventTime: DateTime.parse(data[@event_time_key]).rfc3339
+        }
+      end
     }
 
     http = Net::HTTP.new(uri.host, uri.port)
