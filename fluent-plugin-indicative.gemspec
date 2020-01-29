@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-indicative"
-  s.version     = "0.1.6"
+  s.version     = "0.1.7"
   s.authors     = ["Sam Millar"]
   s.email       = ["sam@millar.io"]
   s.homepage    = "https://github.com/millar/fluent-plugin-indicative"
