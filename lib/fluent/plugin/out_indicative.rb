@@ -17,8 +17,6 @@ def flatten_hash(hash)
       v.each do |item|
         if item.is_a?(Hash) && item.has_key?("key") && item.has_key?("value")
           h["#{k}.#{item["key"]}"] = item["value"]
-        else
-          h["#{k}.#{item}"] = true
         end
       end
     else
