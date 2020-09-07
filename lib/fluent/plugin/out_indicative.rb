@@ -60,7 +60,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
 
     payload = {
       apiKey: @api_key,
-      events: events.filter {|data| data[@event_filter_key] != false}.map do |data|
+      events: events.filter {|data| !@event_filter_key or data[@event_filter_key] != false}.map do |data|
         unique_id_key = @event_unique_id_keys.find {|k| data[k]}
         {
           eventName: data[@event_name_key],
