@@ -3,10 +3,10 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "fluent-plugin-indicative"
-  s.version     = "0.1.7"
+  s.version     = "0.1.8"
   s.authors     = ["Sam Millar"]
   s.email       = ["sam@millar.io"]
-  s.homepage    = "https://github.com/millar/fluent-plugin-indicative"
+  s.homepage    = "https://github.com/mixcloud/fluent-plugin-indicative"
   s.summary     = %q{Fluentd output plugin to send events to Indicative}
 
   s.files         = `git ls-files`.split("\n")
