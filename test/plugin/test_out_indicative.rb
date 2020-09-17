@@ -12,6 +12,14 @@ class IndicativeOutputTest < Test::Unit::TestCase
     event_unique_id_keys  user_id, session_id
   ]
 
+  FILTER_CONFIG = %[
+    api_key               INDICATIVE_API_KEY
+    event_name_key        event_name
+    event_time_key        created_at
+    event_unique_id_keys  user_id, session_id
+    event_filter_key      indicative
+  ]
+
   BUFFER_CONFIG = %[
     api_key               INDICATIVE_API_KEY
     event_name_key        event_name
@@ -59,6 +67,42 @@ class IndicativeOutputTest < Test::Unit::TestCase
             'session_id' => 'a3bd2',
             'user_id' => nil,
             'screen.id' => 'index'
+          },
+          'eventTime' => '2015-01-01T10:00:00+00:00'
+        }]
+      }.to_json, times: 1
+  end
+
+  def test_emit_stream_with_filter
+    d = create_driver(FILTER_CONFIG)
+    stub_request(:any, d.instance.api_url)
+    d.run(default_tag: 'test') do
+      d.feed({'event_name' => 'filter_nil', 'created_at' => '2015-01-01T10:00:00.000Z', 'session_id' => 'a3bd2'})
+      d.feed({'event_name' => 'filter_false', 'created_at' => '2015-01-01T10:00:00.000Z', 'session_id' => 'a3bd2', 'indicative' => false})
+      d.feed({'event_name' => 'filter_true', 'created_at' => '2015-01-01T10:00:00.000Z', 'session_id' => 'a3bd2', 'indicative' => true})
+    end
+    events = d.events
+    assert_equal 0, events.length
+    assert_requested :post, d.instance.api_url,
+      headers: {'Content-Type' => 'application/json'}, body: {
+        'apiKey' => 'INDICATIVE_API_KEY',
+        'events' => [{
+          'eventName' => 'filter_nil',
+          'eventUniqueId' => 'a3bd2',
+          'properties' => {
+            'event_name' => 'filter_nil',
+            'created_at' => '2015-01-01T10:00:00.000Z',
+            'session_id' => 'a3bd2'
+          },
+          'eventTime' => '2015-01-01T10:00:00+00:00'
+        }, {
+          'eventName' => 'filter_true',
+          'eventUniqueId' => 'a3bd2',
+          'properties' => {
+            'event_name' => 'filter_true',
+            'created_at' => '2015-01-01T10:00:00.000Z',
+            'session_id' => 'a3bd2',
+            'indicative' => true
           },
           'eventTime' => '2015-01-01T10:00:00+00:00'
         }]

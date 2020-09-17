@@ -35,6 +35,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
   config_param :event_name_key, :string
   config_param :event_time_key, :string
   config_param :event_unique_id_keys, :array, value_type: :string
+  config_param :event_filter_key, :string, default: nil
 
   def process(tag, es)
     es.each_slice(@batch_size) do |events|
@@ -59,7 +60,7 @@ class Fluent::Plugin::IndicativeOutput < Fluent::Plugin::Output
 
     payload = {
       apiKey: @api_key,
-      events: events.map do |data|
+      events: events.filter {|data| !@event_filter_key or data[@event_filter_key] != false}.map do |data|
         unique_id_key = @event_unique_id_keys.find {|k| data[k]}
         {
           eventName: data[@event_name_key],
